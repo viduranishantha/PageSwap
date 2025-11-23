@@ -3,6 +3,7 @@ import { useUserRepository } from '../repositories';
 import type { IUser } from '../types/IUser.ts';
 import { UserTable } from '../components/UserTable';
 import styles from './UsersPage.module.css';
+import AddUserDialog from '../components/AddUserDialog';
 
 export function UsersPage() {
   const userRepository = useUserRepository();
@@ -29,9 +30,6 @@ export function UsersPage() {
     getUsers();
   }, [loadUsers]);
 
-  const handleAddUser = useCallback(() => {
-    alert('TODO: Implement add user modal');
-  }, []);
 
   if (loading) {
     return (
@@ -57,7 +55,7 @@ export function UsersPage() {
         <i className={`fa-solid fa-gear ${styles.userIcon}`}></i>
         <div className={styles.title}>User Management</div>
         <div className={styles.addUser}>
-          <button onClick={handleAddUser}>+ Add User</button>
+          <AddUserDialog onSuccess={loadUsers} />
         </div>
       </div>
 

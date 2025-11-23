@@ -8,31 +8,53 @@ interface UserAvatarProps {
   firstName?: string;
   lastName?: string;
   size?: number;
+  /** Optional preloaded image URL (blob: or http). If provided, component will not fetch. */
+  imageUrl?: string | null;
 }
 
-export function UserAvatar({ avatarId, firstName, lastName, size = 40 }: UserAvatarProps) {
-  const [imageUrl, setImageUrl] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
+export function UserAvatar({ avatarId, firstName, lastName, size = 40, imageUrl: externalImageUrl = null }: UserAvatarProps) {
+  const [imageUrl, setImageUrl] = useState<string | null>(externalImageUrl);
+  const [loading, setLoading] = useState(!externalImageUrl);
   const imageRepository = useImageRepository();
 
   useEffect(() => {
+    // If a parent provided a preloaded image URL, use it and do not fetch or revoke it here.
+    if (externalImageUrl) {
+      setImageUrl(externalImageUrl);
+      setLoading(false);
+      return;
+    }
+
     let cancelled = false;
+    let createdUrl: string | null = null;
 
     const loadImage = async () => {
       try {
         const url = await imageRepository.get(avatarId);
-        if (!cancelled) {
-          setImageUrl(url);
+        if (cancelled) {
+          // We created a URL but the component unmounted; revoke immediately.
+          try { URL.revokeObjectURL(url); } catch (e) { void e; }
+          return;
         }
-      } catch (err) {
-        const fallbackUrl = await imageRepository.get('placeholder-dp.png');
-        if (!cancelled) {
+        createdUrl = url;
+        setImageUrl(url);
+      } catch (_err: unknown) {
+        void _err;
+        // Try fallback; handle unknown error type safely
+        try {
+          const fallbackUrl = await imageRepository.get('placeholder-dp.png');
+          if (cancelled) {
+            try { URL.revokeObjectURL(fallbackUrl); } catch (e) { void e; }
+            return;
+          }
+          createdUrl = fallbackUrl;
           setImageUrl(fallbackUrl);
+        } catch (e) {
+          void e;
+          if (!cancelled) setImageUrl(null);
         }
       } finally {
-        if (!cancelled) {
-          setLoading(false);
-        }
+        if (!cancelled) setLoading(false);
       }
     };
 
@@ -40,8 +62,13 @@ export function UserAvatar({ avatarId, firstName, lastName, size = 40 }: UserAva
 
     return () => {
       cancelled = true;
+      if (createdUrl) {
+        try {
+          URL.revokeObjectURL(createdUrl);
+        } catch (e) { void e; }
+      }
     };
-  }, [avatarId]);
+  }, [avatarId, externalImageUrl, imageRepository]);
 
   const initials =
     [firstName, lastName]
