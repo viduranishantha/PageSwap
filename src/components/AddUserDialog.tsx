@@ -3,6 +3,8 @@ import * as Dialog from '@radix-ui/react-dialog';
 import { Cross2Icon } from "@radix-ui/react-icons";
 import { CaretUpIcon } from "@radix-ui/react-icons";
 import { CaretDownIcon } from "@radix-ui/react-icons";
+import { CheckIcon } from "@radix-ui/react-icons";
+import { PlusIcon } from "@radix-ui/react-icons";
 import styles from './AddUserDialog.module.css';
 import { useUserRepository, useImageRepository } from '../repositories';
 import { AVATAR_IDS } from '../repositories';
@@ -174,7 +176,10 @@ export default function AddUserDialog({ onSuccess }: Props) {
 	return (
 		<Dialog.Root open={open} onOpenChange={(v) => { setOpen(v); if (!v) resetForm(); }}>
 			<Dialog.Trigger asChild>
-				<button type="button" className={styles.rootButton}>Add User</button>
+				<button type="button" className={styles.addUserButton}>
+					<PlusIcon className={styles.icon} aria-hidden="true" />
+					<span className={styles.labelText}>Add User</span>
+				</button>
 			</Dialog.Trigger>
 
 			<Dialog.Portal>
@@ -247,8 +252,8 @@ export default function AddUserDialog({ onSuccess }: Props) {
 								</button>
 							</div>
                             <div className={styles.createContainer}>
-								<button type="submit" className={styles.submit} disabled={saving}>
-									{saving ? 'Saving...' : 'Create'}
+								<button type="submit" className={styles.createButton} disabled={saving}>
+									{saving ? 'Saving...' : <><CheckIcon />Create</>}
 								</button>
 							</div>
 

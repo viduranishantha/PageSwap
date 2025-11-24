@@ -7,10 +7,41 @@
   cursor: pointer;
 }
 
+.addUserButton{
+    background: var(--color-success-main);
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+    padding: 7px 12px;
+    color: var(--color-primary-contrast);
+    font-weight: 600;
+    font-size: 14px;
+    display: flex;
+    vertical-align: middle;
+}
+
+.plusIcon{
+    background-color: var(--color-primary-contrast);
+}
+
+
+
 .cancelBtn {
   background: white;
   color: var(--color-secondary-dark, #0b4f6c);
   border: 1px solid #e5e7eb;
+}
+
+.icon {
+  width: 18px;
+  height: 18px;
+  margin-right: 8px;
+  display: inline-flex;
+  vertical-align: middle;
+}
+
+.labelText {
+  display: inline-block;
 }
 
 .overlay {
@@ -130,13 +161,21 @@
 }
 
 
-.submit {
+.createButton {
   background: #16a34a;
   color: white;
   padding: 8px 14px;
   border-radius: 6px;
   border: none;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.avatarPickerContainer {
+  padding-bottom: 12px;
+  display: block;
 }
 
 .avatarGrid {
